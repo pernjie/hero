@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CrimeManager : MonoBehaviour {
 	City city;
+	UnitManager unitManager;
 	float crimeSpawnCounter = 5f;
 	float crimeSpawnCooldown;
 
@@ -11,6 +12,7 @@ public class CrimeManager : MonoBehaviour {
 
 	void Awake() {
 		city = FindObjectOfType<City> ();
+		unitManager = FindObjectOfType<UnitManager> ();
 		currentCrimes = new List<Crime> ();
 		crimesToExpire = new List<Crime> ();
 	}
@@ -38,6 +40,8 @@ public class CrimeManager : MonoBehaviour {
 
 				// check if crime is completed
 				if (crime.crimeCurrentProgress > crime.crimeProgressNeeded) {
+					city.GetTileGOFromTile (crime.tiles[0]).GetComponent<TileComponent> ().HideTime();
+
 					foreach (Tile tile in crime.tiles) {
 						crime.crimeComplete = true;
 						city.GetTileGOFromTile (tile).GetComponent<TileComponent> ().RemoveCrimeOnTile ();
@@ -45,20 +49,26 @@ public class CrimeManager : MonoBehaviour {
 						crimesToExpire.Add (crime);
 					}
 				} else {
-					// if got hero on scene, handle henchmen fighting
-					if (crime.heroes != null && crime.heroes.Count > 0) {
+					city.GetTileGOFromTile (crime.tiles[0]).GetComponent<TileComponent> ().DisplayTime (crime.crimeProgressNeeded - crime.crimeCurrentProgress);
+
+					// if got hero on scene, handle fighting
+					List<Hero> targetableHeroes = crime.GetTargetableHeroes();
+					if (targetableHeroes.Count > 0) {
 						foreach (Criminal criminal in crime.criminals) {
 							// if attack is ready
 							if (criminal.nextAttackCounter > criminal.attackCooldown) {
 								// select random hero?
-								Hero heroToTarget = crime.heroes [Random.Range (0, crime.heroes.Count)];
-								heroToTarget.DamageUnit (criminal.GetAttackDamage ());
+								Hero heroToTarget = targetableHeroes [Random.Range (0, targetableHeroes.Count)];
+								unitManager.HandleUnitDamage (criminal, heroToTarget);
 
 								criminal.nextAttackCounter = 0f;
 							} else {
 								criminal.nextAttackCounter += Time.deltaTime;
 							}
 						}
+					} else {
+						// if no targetable heroes
+						continue;
 					}
 				}
 			}
@@ -131,6 +141,17 @@ public class CrimeManager : MonoBehaviour {
 		return new CrimeInRange (null, closestCrimeTileDistance, closestCrimeTile);
 	}
 
+	public bool CheckTileHasCrime(Tile currentTile) {
+		foreach (Crime crime in currentCrimes) {
+			foreach (Tile crimeTile in crime.tiles) {
+				if (crimeTile == currentTile)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
 	public bool OnCrimeScene(Tile currentTile, Tile[] crimeTiles) {
 		foreach (Tile crimeTile in crimeTiles) {
 			if (currentTile == crimeTile) {
@@ -145,11 +166,11 @@ public class CrimeManager : MonoBehaviour {
 [System.Serializable]
 public class Criminal : Unit {
 	public Criminal() {
-		InitialiseStats (2, 1, 1f);
+		InitialiseStats (UnitType.Criminal, 2, 1, 1f);
 	}
 
 	public Criminal(int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (maxHealth, attackDamage, attackSpeed);
+		InitialiseStats (UnitType.Criminal, maxHealth, attackDamage, attackSpeed);
 	}
 }
 
@@ -182,6 +203,48 @@ public class Crime {
 		}
 
 		heroes.Add (hero);
+	}
+
+	public List<Hero> GetTargetableHeroes() {
+		List<Hero> targetableHeroes = new List<Hero> ();
+
+		// if empty
+		if (heroes == null)
+			return targetableHeroes;
+
+		foreach (Hero hero in heroes) {
+			if (!hero.isDead)
+				targetableHeroes.Add (hero);
+		}
+		return targetableHeroes;
+	}
+
+	public List<Criminal> GetTargetableCriminals() {
+		List<Criminal> targetableCriminals = new List<Criminal> ();
+
+		// if empty
+		if (criminals == null)
+			return targetableCriminals;
+
+		foreach (Criminal criminal in criminals) {
+			if (!criminal.isDead)
+				targetableCriminals.Add (criminal);
+		}
+		return targetableCriminals;
+	}
+
+	public List<Villain> GetTargetableVillains() {
+		List<Villain> targetableVillains = new List<Villain> ();
+
+		// if empty
+		if (villains == null)
+			return targetableVillains;
+
+		foreach (Villain villain in villains) {
+			if (!villain.isDead)
+				targetableVillains.Add (villain);
+		}
+		return targetableVillains;
 	}
 
 	public bool GetIsActive() {

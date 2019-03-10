@@ -57,7 +57,7 @@
      <Compile Include="Assets\Scripts\CrimeManager.cs" />
      <Compile Include="Assets\Scripts\HeroMover.cs" />
      <Compile Include="Assets\Scripts\TileComponent.cs" />
-     <Compile Include="Assets\Scripts\Unit.cs" />
+     <Compile Include="Assets\Scripts\UnitManager.cs" />
      <Compile Include="Assets\Scripts\UnitMover.cs" />
      <Compile Include="Assets\Scripts\VillainMover.cs" />
  <Reference Include="Unity.TextMeshPro.Editor">

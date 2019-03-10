@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class City : MonoBehaviour {
+	CrimeManager crimeManager;
+
 	public GameObject TileDock;
 	public GameObject TilePrefab;
-	public GameObject HeroPrefab;
-	public GameObject VillainPrefab;
 
 	public GameObject HousePrefab;
 
@@ -30,29 +30,25 @@ public class City : MonoBehaviour {
 	public List<Tile> tileList;
 	Dictionary<Tile, GameObject> TileToGOMap;
 
+	void Awake() {
+		crimeManager = FindObjectOfType<CrimeManager> ();
+	}
+
     // Start is called before the first frame update
     void Start() {
 		GenerateMap ();
 		SetTileSprites ();
 
-		for (int i = 0; i < 3; i++) {
-			GameObject heroGO = Instantiate (HeroPrefab, TileDock.transform);
-			heroGO.GetComponent<HeroMover> ().Initialise (GetRandomTile());
-		}
-
-		for (int i = 0; i < 2; i++) {
-			GameObject villainGO = Instantiate (VillainPrefab, TileDock.transform);
-			villainGO.GetComponent<VillainMover> ().Initialise (GetRandomTile());
-		}
-
 		GameObject houseGO = Instantiate (HousePrefab, TileDock.transform);
 		houseGO.transform.position = GetTilePosition (2, 4);
+
+		FindObjectOfType<UnitManager> ().Initialise ();
     }
 
 	void GenerateMap() {
 		// setup total map size in terms of pixels
 		float MAP_TOTAL_WIDTH = MAP_WIDTH * TILE_WIDTH;
-		float MAP_TOTAL_HEIGHT = MAP_HEIGHT * TILE_HEIGHT;
+		// float MAP_TOTAL_HEIGHT = MAP_HEIGHT * TILE_HEIGHT;
 
 		// initialise stuff
 		tileList = new List<Tile> ();
@@ -103,8 +99,26 @@ public class City : MonoBehaviour {
 			return null;
 	}
 
+	// dont return tile with crime
 	public Tile GetRandomTile() {
-		return tileList[Random.Range(0, tileList.Count)];
+		List<Tile> shuffled = shuffleList<Tile> (tileList);
+
+		for (int i = 0; i < shuffled.Count; i++) {
+			if (!crimeManager.CheckTileHasCrime(shuffled[i]))
+				return shuffled[i];
+		}
+		return null;
+	}
+
+	public List<Tile> shuffleList<T>(List<Tile> theList) {
+		for (int i=0;i<theList.Count;i++) {
+			Tile temp = theList[i];
+			int randomIndex = Random.Range (i, theList.Count);
+			theList [i] = theList [randomIndex];
+			theList [randomIndex] = temp;
+		}
+
+		return theList;
 	}
 
 	public void SetTileSprites() {

@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HeroMover : UnitMover {
-	public Hero hero;
 	CrimeManager crimeManager;
+	UnitManager unitManager;
+
+	public Hero hero;
 	public HeroState heroState;
 	public Crime currentFocusedCrime;
 
 	public new void Initialise(Tile tile) {
 		base.Initialise (tile);
-		heroState = HeroState.Patrol;
 		crimeManager = FindObjectOfType<CrimeManager> ();
+		unitManager = FindObjectOfType<UnitManager> ();
+
 		hero = new Hero (10, 3, 1f);
+		heroState = HeroState.Patrol;
 	}
 
 	void SetHeroState(HeroState newHeroState) {
@@ -22,6 +26,8 @@ public class HeroMover : UnitMover {
 		} else if (newHeroState == HeroState.Patrol) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, 1f, 1f);
 			delayBetweenTiles = 0.6f;
+		} else if (newHeroState == HeroState.Dead) {
+			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 0f, 0f);
 		}
 
 		this.heroState = newHeroState;
@@ -42,7 +48,44 @@ public class HeroMover : UnitMover {
 			}
 		} else if (heroState == HeroState.Fighting) {
 			if (currentFocusedCrime.GetIsActive ()) {
-				// TODO: handle fighting villains
+				// pool to choose who to target first
+				// TODO: consider AOE attacks?
+				List<Criminal> targetableCriminals = currentFocusedCrime.GetTargetableCriminals();
+				List<Villain> targetableVillains = currentFocusedCrime.GetTargetableVillains ();
+
+				int criminalPool = targetableCriminals.Count * 1;
+				int villainPool = targetableVillains.Count * 1;
+				int totalPool = villainPool + criminalPool;
+
+				if (totalPool > 0) {
+					if (Random.Range (0, totalPool) < villainPool) {
+						// select villain
+						Villain targetVillain = targetableVillains[Random.Range(0, targetableVillains.Count)];
+
+						// if attack is ready
+						if (hero.nextAttackCounter > hero.attackCooldown) {
+							unitManager.HandleUnitDamage (hero, targetVillain);
+							hero.nextAttackCounter = 0f;
+						} else {
+							hero.nextAttackCounter += Time.deltaTime;
+						}
+					} else {
+						// select criminal
+						Criminal targetCriminal = targetableCriminals[Random.Range(0, targetableCriminals.Count)];
+
+						// if attack is ready
+						if (hero.nextAttackCounter > hero.attackCooldown) {
+							unitManager.HandleUnitDamage (hero, targetCriminal);
+							hero.nextAttackCounter = 0f;
+						} else {
+							hero.nextAttackCounter += Time.deltaTime;
+						}
+					}
+				} else {
+					// if nobody to attack, return
+					return;
+				}
+
 			} else {
 				// if crime not active, go back to patrol mode
 				currentFocusedCrime = null;
@@ -50,6 +93,11 @@ public class HeroMover : UnitMover {
 			}
 		}
     }
+
+	public void KillUnit() {
+		Debug.Log (hero.name + " dead");
+		SetHeroState (HeroState.Dead);
+	}
 
 	protected override void finishStepUnit () {
 		if (heroState == HeroState.Patrol) {
@@ -88,7 +136,7 @@ public class HeroMover : UnitMover {
 public class Hero : Unit {
 	public string name;
 	public Hero(int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (maxHealth, attackDamage, attackSpeed);
+		InitialiseStats (UnitType.Hero, maxHealth, attackDamage, attackSpeed);
 		name = "Hero " + Random.Range (0, 9999);
 	}
 }
@@ -96,5 +144,6 @@ public class Hero : Unit {
 public enum HeroState {
 	Patrol,
 	ToCrime,
-	Fighting
+	Fighting,
+	Dead
 }

@@ -3,23 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class VillainMover : UnitMover {
-	public Villain villain;
 	CrimeManager crimeManager;
+	UnitManager unitManager;
+
+	public Villain villain;
 	public VillainState villainState;
 	public Crime currentFocusedCrime;
 
 	public new void Initialise(Tile tile) {
 		base.Initialise (tile);
-		villainState = VillainState.Planning;
 		crimeManager = FindObjectOfType<CrimeManager> ();
+		unitManager = FindObjectOfType<UnitManager> ();
+
 		this.villain = new Villain (2, 10, 4, 1f);
+		villainState = VillainState.Planning;
 	}
 
 	void SetVillainState(VillainState newVillainState) {
 		if (newVillainState == VillainState.ToCrime) {
-			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, .2f, .2f);
+			GetComponentInChildren<SpriteRenderer> ().color = new Color (4f, .5f, .4f);
 		} else if (newVillainState == VillainState.Planning) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, 1f, 1f);
+		} else if (newVillainState == VillainState.Dead) {
+			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 0f, 0f);
 		}
 
 		this.villainState = newVillainState;
@@ -48,17 +54,21 @@ public class VillainMover : UnitMover {
 		} else if (villainState == VillainState.Criming) {
 			if (!currentFocusedCrime.crimeComplete) {
 				// if got hero on scene, handle fighting
-				if (currentFocusedCrime.heroes != null && currentFocusedCrime.heroes.Count > 0) {
+				List<Hero> targetableHeroes = currentFocusedCrime.GetTargetableHeroes();
+				if (targetableHeroes.Count > 0) {
 					// if attack is ready
 					if (villain.nextAttackCounter > villain.attackCooldown) {
 						// select random hero?
-						Hero heroToTarget = currentFocusedCrime.heroes[Random.Range(0, currentFocusedCrime.heroes.Count)];
-						heroToTarget.DamageUnit (villain.GetAttackDamage ());
+						Hero heroToTarget = targetableHeroes [Random.Range (0, targetableHeroes.Count)];
+						unitManager.HandleUnitDamage (villain, heroToTarget);
 
 						villain.nextAttackCounter = 0f;
 					} else {
 						villain.nextAttackCounter += Time.deltaTime;
 					}
+				} else {
+					// if no targetable heroes
+					return;
 				}
 			} else {
 				// plan new crime if crime is complete
@@ -66,6 +76,11 @@ public class VillainMover : UnitMover {
 			}
 		}
     }
+
+	public void KillUnit() {
+		Debug.Log (villain.name + " dead");
+		SetVillainState (VillainState.Dead);
+	}
 
 	protected override void finishPathUnit () {
 		if (villainState == VillainState.ToCrime) {
@@ -92,7 +107,7 @@ public class Villain : Unit {
 	public int leadership;
 
 	public Villain(int leadership, int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (maxHealth, attackDamage, attackSpeed);
+		InitialiseStats (UnitType.Villain, maxHealth, attackDamage, attackSpeed);
 		this.leadership = leadership;
 		name = "Villain " + Random.Range (0, 9999);
 	}
@@ -101,5 +116,6 @@ public class Villain : Unit {
 public enum VillainState {
 	Planning,
 	ToCrime,
-	Criming
+	Criming,
+	Dead
 }
