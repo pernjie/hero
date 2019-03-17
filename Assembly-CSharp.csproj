@@ -53,10 +53,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\BreedingManager.cs" />
      <Compile Include="Assets\Scripts\City.cs" />
      <Compile Include="Assets\Scripts\CrimeManager.cs" />
+     <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\HeroMover.cs" />
      <Compile Include="Assets\Scripts\TileComponent.cs" />
+     <Compile Include="Assets\Scripts\UI\GeneticIcon.cs" />
+     <Compile Include="Assets\Scripts\UI\HeroPortrait.cs" />
+     <Compile Include="Assets\Scripts\UI\LeftPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\PanelViewButton.cs" />
      <Compile Include="Assets\Scripts\UnitManager.cs" />
      <Compile Include="Assets\Scripts\UnitMover.cs" />
      <Compile Include="Assets\Scripts\VillainMover.cs" />

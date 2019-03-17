@@ -10,12 +10,12 @@ public class VillainMover : UnitMover {
 	public VillainState villainState;
 	public Crime currentFocusedCrime;
 
-	public new void Initialise(Tile tile) {
+	public new void Initialise(Villain villain, Tile tile) {
 		base.Initialise (tile);
 		crimeManager = FindObjectOfType<CrimeManager> ();
 		unitManager = FindObjectOfType<UnitManager> ();
+		this.villain = villain;
 
-		this.villain = new Villain (2, 10, 4, 1f);
 		villainState = VillainState.Planning;
 	}
 
@@ -95,21 +95,6 @@ public class VillainMover : UnitMover {
 				GoToTile (crimeManager.GetCrimeInRange (currentTile, currentFocusedCrime.tiles).closestTile);
 			}
 		}
-	}
-}
-
-[System.Serializable]
-public class Villain : Unit {
-	public float planningCounter = 0f;
-	public float planningTimeNeeded = 3f;
-
-	public string name;
-	public int leadership;
-
-	public Villain(int leadership, int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (UnitType.Villain, maxHealth, attackDamage, attackSpeed);
-		this.leadership = leadership;
-		name = "Villain " + Random.Range (0, 9999);
 	}
 }
 

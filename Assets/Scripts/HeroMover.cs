@@ -10,12 +10,12 @@ public class HeroMover : UnitMover {
 	public HeroState heroState;
 	public Crime currentFocusedCrime;
 
-	public new void Initialise(Tile tile) {
+	public new void Initialise(Hero hero, Tile tile) {
 		base.Initialise (tile);
 		crimeManager = FindObjectOfType<CrimeManager> ();
 		unitManager = FindObjectOfType<UnitManager> ();
 
-		hero = new Hero (10, 3, 1f);
+		this.hero = hero;
 		heroState = HeroState.Patrol;
 	}
 
@@ -129,15 +129,6 @@ public class HeroMover : UnitMover {
 				StopPath ();
 			}
 		}
-	}
-}
-
-[System.Serializable]
-public class Hero : Unit {
-	public string name;
-	public Hero(int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (UnitType.Hero, maxHealth, attackDamage, attackSpeed);
-		name = "Hero " + Random.Range (0, 9999);
 	}
 }
 

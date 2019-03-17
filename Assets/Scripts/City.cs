@@ -16,7 +16,7 @@ public class City : MonoBehaviour {
 	int MAP_HEIGHT = 8;
 	float TILE_WIDTH = 1.9f;
 	float TILE_HEIGHT = .95f;
-	float MAP_OFFSET_X = 0f;
+	float MAP_OFFSET_X = 1.3f;
 	float MAP_OFFSET_Y = 0f;
 
 	Tile[] neighbourDirections = new Tile[] {
