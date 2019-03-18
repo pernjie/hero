@@ -112,6 +112,10 @@ public class Unit {
 		}
 	}
 
+	public int GetCollectCost() {
+		return 100;
+	}
+
 	// returns true if unit is killed
 	public bool DamageUnit(int amount) {
 		if (isDead)

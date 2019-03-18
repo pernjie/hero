@@ -203,3 +203,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1889108e1ddb7334eb6c736e86c05e90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unitName: {fileID: 255757900}
+  unit:
+    uid: 
+    name: 
+    gender: 0
+    unitType: 0
+    isDead: 0
+    maxHealth: 0
+    currentHealth: 0
+    attackDamage: 0
+    nextAttackCounter: 0
+    attackCooldown: 0

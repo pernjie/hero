@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class LeftPanel : MonoBehaviour {
-	public GameObject HeroPortraitPrefab;
-	public GameObject GeneticPrefab;
+	public GameObject UnitPortraitPrefab;
 	UnitManager unitManager;
 
 	public GameObject PortraitsDock;
-	public GameObject GeneticDock;
+	public GameObject UnitDetailsPopup;
+	public GameObject BreedingPopup;
 
 	public GameObject CapesView;
-	public GameObject BreedingView;
 
 	int PORTRAITS_IN_ROW = 3;
 	float PORTRAIT_WIDTH = 50f;
@@ -20,35 +19,49 @@ public class LeftPanel : MonoBehaviour {
 	float PORTRAIT_MARGIN = 20f;
 
 	List<Unit> displayedUnits;
-	Dictionary<Unit, HeroPortrait> UnitToPortraitMap;
+	Dictionary<Unit, UnitPortrait> UnitToPortraitMap;
 
 	void Awake() {
 		unitManager = FindObjectOfType<UnitManager> ();
-	}
-
-	void Start() {
-		UnitToPortraitMap = new Dictionary<Unit, HeroPortrait> ();
+		UnitToPortraitMap = new Dictionary<Unit, UnitPortrait> ();
 		displayedUnits = new List<Unit> ();
 	}
 
 	public void ToggleView(PanelView view) {
 		if (view == PanelView.Capes) {
 			CapesView.SetActive (true);
-			BreedingView.SetActive (false);
 		} else if (view == PanelView.Money) {
-
-		} else if (view == PanelView.Breeding) {
-			CapesView.SetActive (false);
-			BreedingView.SetActive (true);
+			
 		} else if (view == PanelView.Laws) {
 
 		}
 	}
 
+	public void ShowUnitDetailsPopup(Unit unit) {
+		UnitDetailsPopup.GetComponent<UnitDetailsPopup> ().Initialise (unit);
+		// UnitDetailsPopup.SetActive (true);
+		UnitDetailsPopup.transform.localScale = new Vector3(1f, 1f, 1f);
+	}
+
+	public void HideUnitDetailsPopup() {
+		// UnitDetailsPopup.SetActive (false);
+		UnitDetailsPopup.transform.localScale = new Vector3(0f, 0f, 0f);
+	}
+
+	public void ShowBreedingPopup() {
+		// BreedingPopup.SetActive (true);
+		BreedingPopup.transform.localScale = new Vector3(1f, 1f, 1f);
+	}
+
+	public void HideBreedingPopup() {
+		// BreedingPopup.SetActive (false);
+		BreedingPopup.transform.localScale = new Vector3(0f, 0f, 0f);
+	}
+
 	public void AddPortrait(Unit unit) {
-		GameObject HeroPortraitGO = Instantiate (HeroPortraitPrefab, PortraitsDock.transform);
-		HeroPortraitGO.GetComponent<HeroPortrait> ().Initialise (unit);
-		UnitToPortraitMap [unit] = HeroPortraitGO.GetComponent<HeroPortrait> ();
+		GameObject UnitPortraitGO = Instantiate (UnitPortraitPrefab, PortraitsDock.transform);
+		UnitPortraitGO.GetComponent<UnitPortrait> ().Initialise (unit);
+		UnitToPortraitMap [unit] = UnitPortraitGO.GetComponent<UnitPortrait> ();
 		displayedUnits.Add (unit);
 
 		RearrangePortraits ();
@@ -73,6 +86,5 @@ public class LeftPanel : MonoBehaviour {
 public enum PanelView {
 	Capes,
 	Money,
-	Breeding,
 	Laws
 }
