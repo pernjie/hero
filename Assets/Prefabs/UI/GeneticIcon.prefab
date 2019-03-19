@@ -163,6 +163,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4476409248590832301}
   - component: {fileID: 4846490977129342635}
+  - component: {fileID: 1928903710852897536}
   m_Layer: 5
   m_Name: GeneticIcon
   m_TagString: Untagged
@@ -215,3 +216,15 @@ MonoBehaviour:
     attackDamage: 0
     nextAttackCounter: 0
     attackCooldown: 0
+--- !u!225 &1928903710852897536
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4476409248590832302}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

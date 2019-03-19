@@ -37,24 +37,29 @@ public class LeftPanel : MonoBehaviour {
 		}
 	}
 
+	public GameObject blockingPanel;
+	GameObject currentPopup;
+
 	public void ShowUnitDetailsPopup(Unit unit) {
 		UnitDetailsPopup.GetComponent<UnitDetailsPopup> ().Initialise (unit);
-		// UnitDetailsPopup.SetActive (true);
+		blockingPanel.SetActive (true);
 		UnitDetailsPopup.transform.localScale = new Vector3(1f, 1f, 1f);
+		currentPopup = UnitDetailsPopup;
 	}
 
 	public void HideUnitDetailsPopup() {
-		// UnitDetailsPopup.SetActive (false);
+		blockingPanel.SetActive (false);
 		UnitDetailsPopup.transform.localScale = new Vector3(0f, 0f, 0f);
 	}
 
 	public void ShowBreedingPopup() {
-		// BreedingPopup.SetActive (true);
+		blockingPanel.SetActive (true);
 		BreedingPopup.transform.localScale = new Vector3(1f, 1f, 1f);
+		currentPopup = BreedingPopup;
 	}
 
 	public void HideBreedingPopup() {
-		// BreedingPopup.SetActive (false);
+		blockingPanel.SetActive (false);
 		BreedingPopup.transform.localScale = new Vector3(0f, 0f, 0f);
 	}
 
@@ -65,6 +70,13 @@ public class LeftPanel : MonoBehaviour {
 		displayedUnits.Add (unit);
 
 		RearrangePortraits ();
+	}
+
+	public void ExitCurrentPopup() {
+		if (currentPopup != null) {
+			blockingPanel.SetActive (false);
+			currentPopup.transform.localScale = new Vector3 (0f, 0f, 0f);
+		}
 	}
 
 	public void UpdateHealth(Unit unit) {

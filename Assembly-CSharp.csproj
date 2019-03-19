@@ -59,9 +59,12 @@
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\HeroMover.cs" />
      <Compile Include="Assets\Scripts\TileComponent.cs" />
+     <Compile Include="Assets\Scripts\UI\BlockingPanel.cs" />
      <Compile Include="Assets\Scripts\UI\BreedingPopup.cs" />
+     <Compile Include="Assets\Scripts\UI\BreedingSlot.cs" />
      <Compile Include="Assets\Scripts\UI\GeneticIcon.cs" />
      <Compile Include="Assets\Scripts\UI\LeftPanel.cs" />
+     <Compile Include="Assets\Scripts\UI\MouseController.cs" />
      <Compile Include="Assets\Scripts\UI\PanelViewButton.cs" />
      <Compile Include="Assets\Scripts\UI\UnitDetailsPopup.cs" />
      <Compile Include="Assets\Scripts\UI\UnitPortrait.cs" />
