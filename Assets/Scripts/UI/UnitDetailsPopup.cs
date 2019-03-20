@@ -10,6 +10,7 @@ public class UnitDetailsPopup : MonoBehaviour {
 
 	Unit unit;
 	public Text name;
+	public Text gender;
 
 	void Awake() {
 		leftPanel = FindObjectOfType<LeftPanel> ();
@@ -20,6 +21,7 @@ public class UnitDetailsPopup : MonoBehaviour {
 	public void Initialise(Unit unit) {
 		this.unit = unit;
 		name.text = unit.name;
+		gender.text = unit.gender.ToString();
 	}
 
 	public void OnCollectClick() {

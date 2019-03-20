@@ -1,34 +1,16 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\UI\GeneticIcon.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\UI\MouseController.cs">
     <Files>
-      <File FileName="Assets\Scripts\UI\GeneticIcon.cs" Line="38" Column="10" />
-      <File FileName="Assets\Scripts\UI\BreedingSlot.cs" Line="10" Column="50" />
-      <File FileName="Assets\Scripts\UI\LeftPanel.cs" Line="15" Column="2" />
-      <File FileName="Assets\Scripts\UI\BreedingPopup.cs" Line="8" Column="32" />
+      <File FileName="Assets\Scripts\UI\GeneticIcon.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UI\BreedingSlot.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UI\LeftPanel.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UI\BreedingPopup.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UnitManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UI\UnitDetailsPopup.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\BreedingManager.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\UI\MouseController.cs" Line="34" Column="3" />
     </Files>
-    <Pads>
-      <Pad Id="ProjectPad">
-        <State name="__root__">
-          <Node name="hero" expanded="True">
-            <Node name="Assembly-CSharp" expanded="True">
-              <Node name="Assets" expanded="True">
-                <Node name="Scripts" expanded="True">
-                  <Node name="UI" expanded="True">
-                    <Node name="GeneticIcon.cs" selected="True" />
-                  </Node>
-                </Node>
-              </Node>
-            </Node>
-          </Node>
-        </State>
-      </Pad>
-      <Pad Id="MonoDevelop.NUnit.TestPad">
-        <State name="__root__">
-          <Node name="hero" expanded="True" selected="True" />
-        </State>
-      </Pad>
-    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

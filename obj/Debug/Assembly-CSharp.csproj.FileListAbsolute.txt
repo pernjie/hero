@@ -1,0 +1,5 @@
+D:\Unity Projects\hero\Temp\bin\Debug\Assembly-CSharp.dll
+D:\Unity Projects\hero\Temp\bin\Debug\nunit.framework.dll
+D:\Unity Projects\hero\Temp\bin\Debug\UnityEngine.CoreModule.dll
+D:\Unity Projects\hero\Temp\bin\Debug\UnityEngine.SharedInternalsModule.dll
+D:\Unity Projects\hero\Temp\bin\Debug\UnityEngine.UI.dll

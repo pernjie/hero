@@ -5,8 +5,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
-	Transform breedingPopup;
-	Transform geneticDock;
+	BreedingPopup breedingPopup;
+	Transform breedingPopupTransform;
+	Transform geneticDockTransform;
 	public Text unitName;
 	Vector3 startingPosition;
 
@@ -14,8 +15,9 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 	public Unit unit;
 
 	void Awake() {
-		breedingPopup = FindObjectOfType<BreedingPopup> ().gameObject.transform;
-		geneticDock = FindObjectOfType<BreedingPopup> ().GeneticDock.transform;
+		breedingPopup = FindObjectOfType<BreedingPopup> ();
+		breedingPopupTransform = FindObjectOfType<BreedingPopup> ().gameObject.transform;
+		geneticDockTransform = FindObjectOfType<BreedingPopup> ().GeneticDock.transform;
 	}
 
 	void Start() {
@@ -24,6 +26,7 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 	}
 
 	public void Initialise (Unit unit) {
+		this.unit = unit;
 		unitName.text = unit.name;
 	}
 
@@ -33,7 +36,7 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 	public void OnBeginDrag(PointerEventData eventData) {
 		inSlot = false;
 
-		transform.SetParent (breedingPopup);
+		transform.SetParent (breedingPopupTransform);
 		//GetComponentInChildren<Image> ().raycastTarget = false;
 		GetComponent<CanvasGroup>().blocksRaycasts = false;
 		GetComponent<CanvasGroup> ().interactable = false;
@@ -46,24 +49,25 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 	}
 
 	public void OnEndDrag(PointerEventData eventData) {
-		resetPosition ();
+		ResetPosition ();
 	}
 
 	public void DropOnSlot(BreedingSlot breedingSlot) {
 		if (unit.gender == breedingSlot.genderSlot) {
 			inSlot = true;
-			Debug.Log ("DROP");
 			this.transform.position = breedingSlot.gameObject.transform.position;
+			breedingPopup.AddIconToSlot (this, breedingSlot);
 		} else {
-			resetPosition ();
+			ResetPosition ();
 		}
 	}
 
-	void resetPosition() {
+	public void ResetPosition() {
 		GetComponent<CanvasGroup>().blocksRaycasts = true;
 		GetComponent<CanvasGroup> ().interactable = true;
 		if (!inSlot) {
-			transform.SetParent (geneticDock);
+			breedingPopup.RemoveIconFromSlot (this);
+			transform.SetParent (geneticDockTransform);
 			this.transform.localPosition = startingPosition;
 			//transform.SetAsLastSibling ();
 		}

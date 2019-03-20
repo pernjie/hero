@@ -25,8 +25,8 @@ public class BreedingManager : MonoBehaviour {
 		GeneticOwners.Remove (owner);
 	}
 
-	public void Breed() {
-
+	public Unit Breed(Unit unit1, Unit unit2) {
+		return new Unit ();
 	}
 }
 
