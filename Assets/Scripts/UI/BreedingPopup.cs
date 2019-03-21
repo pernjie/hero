@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class BreedingPopup : MonoBehaviour {
+	LeftPanel leftPanel;
 	BreedingManager breedingManager;
+	MouseController mouseController;
 
 	public GameObject GeneticPrefab;
 	public GameObject GeneticDock;
@@ -21,7 +23,9 @@ public class BreedingPopup : MonoBehaviour {
 	List<Unit> displayedIcons;
 
 	void Awake() {
+		leftPanel = FindObjectOfType<LeftPanel> ();
 		breedingManager = FindObjectOfType<BreedingManager> ();
+		mouseController = FindObjectOfType<MouseController> ();
 		UnitToIconMap = new Dictionary<Unit, GeneticIcon> ();
 		displayedIcons = new List<Unit> ();
 	}
@@ -81,7 +85,13 @@ public class BreedingPopup : MonoBehaviour {
 			MaleSlot.RemoveIconFromSlot ();
 			FemaleSlot.RemoveIconFromSlot ();
 
+			leftPanel.HideBreedingPopup ();
 
+			mouseController.ChangeMouseMode (MouseMode.Targeting, targetingCallbackFunc:OnPlaceUnitDone);
 		}
+	}
+
+	public void OnPlaceUnitDone(Tile tile) {
+		Debug.Log ("callback! " + tile.ToString());
 	}
 }

@@ -22,6 +22,12 @@ public class TileComponent : MonoBehaviour {
 		GetComponentInChildren<SpriteRenderer> ().color = new Color(1f, 1f, 1f);
 	}
 
+	public void SetTileEffect(TileEffect tileEffect) {
+		if (tileEffect == TileEffect.Default) {
+			
+		}
+	}
+
 	public void DisplayTime(float time) {
 		GetComponentInChildren<TextMesh> ().text = "" + Mathf.RoundToInt(time);
 	}
@@ -82,4 +88,9 @@ public enum TileType {
 	Pavement,
 	Road, 
 	Building
+}
+
+public enum TileEffect {
+	Default,
+	Targeted
 }

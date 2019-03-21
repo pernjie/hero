@@ -6,10 +6,14 @@ using UnityEngine.EventSystems;
 public class MouseController : MonoBehaviour {
 	City city;
 
+	public GameObject UnitDummy;
+	public LayerMask LayerIDForTiles;
+
+	public MouseMode mouseMode;
 	public delegate void UpdateFunc();
 	UpdateFunc Update_CurrentFunc;
-
-	public LayerMask LayerIDForTiles;
+	public delegate void TargetingCallbackFunc(Tile tile);
+	TargetingCallbackFunc targetingCallbackFunc;
 
 	void Awake() {
 		city = FindObjectOfType<City> ();
@@ -17,6 +21,9 @@ public class MouseController : MonoBehaviour {
 
 	void Start() {
 		Update_CurrentFunc = Update_ViewTileDetails;
+		mouseMode = MouseMode.Default;
+
+		//ChangeMouseMode (MouseMode.Targeting);
 	}
 
     // Update is called once per frame
@@ -35,6 +42,40 @@ public class MouseController : MonoBehaviour {
 
 	void Update_TargetTile() {
 		Tile tile = GetTileOnCursor ();
+		if (tile != null) {
+			if (UnitDummy.transform.localScale == new Vector3 (0f, 0f, 0f)) {
+				ShowUnitDummy ();
+			}
+
+			Vector3 tilePosition = city.GetTileGOFromTile (tile).transform.position;
+			UnitDummy.transform.position = new Vector3 (tilePosition.x, tilePosition.y, -1f);
+
+			// if user clicks, then current tile is selected as target (note this is in the if block that we can assume tile exists)
+			if (Input.GetMouseButtonDown (0)) {
+				targetingCallbackFunc (tile);
+				HideUnitDummy ();
+				ChangeMouseMode (MouseMode.Default);
+			}
+		}
+	}
+
+	public void ChangeMouseMode(MouseMode newMode, TargetingCallbackFunc targetingCallbackFunc=null) {
+		if (newMode == MouseMode.Default) {
+			Update_CurrentFunc = Update_ViewTileDetails;
+		} else if (newMode == MouseMode.Targeting) {
+			Update_CurrentFunc = Update_TargetTile;
+			this.targetingCallbackFunc = targetingCallbackFunc;
+		}
+
+		this.mouseMode = newMode;
+	}
+
+	void ShowUnitDummy() {
+		UnitDummy.transform.localScale = new Vector3 (1f, 1f, 1f);
+	}
+
+	void HideUnitDummy() {
+		UnitDummy.transform.localScale = new Vector3 (0f, 0f, 0f);
 	}
 
 	Tile GetTileOnCursor() {
@@ -46,4 +87,9 @@ public class MouseController : MonoBehaviour {
 		}
 		return null;
 	}
+}
+
+public enum MouseMode {
+	Default,
+	Targeting
 }
