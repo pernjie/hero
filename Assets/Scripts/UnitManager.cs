@@ -5,6 +5,7 @@ using UnityEngine;
 public class UnitManager : MonoBehaviour {
 	City city;
 	LeftPanel leftPanel;
+	BreedingManager breedingManager;
 
 	public GameObject HeroPrefab;
 	public GameObject VillainPrefab;
@@ -14,36 +15,43 @@ public class UnitManager : MonoBehaviour {
 	void Awake() {
 		city = FindObjectOfType<City> ();
 		leftPanel = FindObjectOfType<LeftPanel> ();
+		breedingManager = FindObjectOfType<BreedingManager> ();
 	}
 
 	public void Initialise() {
 		UnitToGOMap = new Dictionary<Unit, GameObject> ();
 
 		for (int i = 0; i < 4; i++) {
-			AddHero ();
+			AddHero (breedingManager.GetNewHero(), city.GetRandomTile());
 		}
 
 		for (int i = 0; i < 2; i++) {
-			AddVillain ();
+			AddVillain (breedingManager.GetNewVillain (), city.GetRandomTile());
+		}
+
+		// FOR TESTING
+		foreach (Unit unit in units) {
+			BreedingManager breedingManager = FindObjectOfType<BreedingManager> ();
+			breedingManager.AddGeneticMaterial (unit);
 		}
 	}
 
-	void AddHero() {
+	public void AddHero(Hero hero, Tile tile) {
 		GameObject heroGO = Instantiate (HeroPrefab);
-		Hero newHero = new Hero (10, 3, 1f);
-		heroGO.GetComponent<HeroMover> ().Initialise (newHero, city.GetRandomTile());
-		units.Add (newHero);
-		UnitToGOMap [newHero] = heroGO;
-		leftPanel.AddPortrait (newHero);
+
+		heroGO.GetComponent<HeroMover> ().Initialise (hero, tile);
+		units.Add (hero);
+		UnitToGOMap [hero] = heroGO;
+		leftPanel.AddPortrait (hero);
 	}
 
-	void AddVillain() {
+	public void AddVillain(Villain villain, Tile tile) {
 		GameObject villainGO = Instantiate (VillainPrefab);
-		Villain newVillain = new Villain (2, 10, 4, 1f);
-		units.Add (newVillain);
-		villainGO.GetComponent<VillainMover> ().Initialise (newVillain, city.GetRandomTile());
-		UnitToGOMap [newVillain] = villainGO;
-		leftPanel.AddPortrait (newVillain);
+
+		units.Add (villain);
+		villainGO.GetComponent<VillainMover> ().Initialise (villain, tile);
+		UnitToGOMap [villain] = villainGO;
+		leftPanel.AddPortrait (villain);
 	}
 
 	public bool HandleUnitDamage(Unit attacker, Unit attacked) {
@@ -90,15 +98,37 @@ public class Unit {
 	public float nextAttackCounter;
 	public float attackCooldown;
 
-	public void InitialiseStats (UnitType unitType, int maxHealth, int attackDamage, float attackSpeed) {
+	public float movementDelay;
+
+	public Unit() { }
+
+	public void Initialise (GeneticMaterial genetics) {
+		this.genetics = genetics;
+
+		this.uid = "Unit " + Random.Range (0, 9999);
+		this.gender = (Gender)Random.Range (0, 2);
+		this.unitType = UnitType.None; // temporary
+
+		this.maxHealth = genetics.health;
+		this.currentHealth = maxHealth;
+		this.attackDamage = genetics.strength;
+
+		this.attackCooldown = 15f/(float)genetics.speed;
+		this.nextAttackCounter = 0f;
+
+		this.movementDelay = 10f / (float)genetics.speed;
+	}
+
+	// for criminals
+	public void Initialise (UnitType unitType, int health, int strength, int speed) {
 		this.uid = "Unit " + Random.Range (0, 9999);
 		this.gender = (Gender)Random.Range (0, 2);
 		this.unitType = unitType;
-		this.maxHealth = maxHealth;
+		this.maxHealth = health;
 		this.currentHealth = maxHealth;
-		this.attackDamage = attackDamage;
+		this.attackDamage = strength;
 
-		this.attackCooldown = 1f;
+		this.attackCooldown = 15f/(float)speed;
 		this.nextAttackCounter = 0f;
 	}
 
@@ -159,9 +189,9 @@ public class Unit {
 
 [System.Serializable]
 public class Hero : Unit {
-	public Hero(int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (UnitType.Hero, maxHealth, attackDamage, attackSpeed);
-		name = "Hero " + Random.Range (0, 9999);
+	
+	public Hero(string name) {
+		this.name = name;
 	}
 }
 
@@ -173,14 +203,15 @@ public class Villain : Unit {
 
 	public int leadership;
 
-	public Villain(int leadership, int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (UnitType.Villain, maxHealth, attackDamage, attackSpeed);
-		this.leadership = leadership;
-		name = "Villain " + Random.Range (0, 9999);
+	public Villain(string name) {
+		this.name = name;
+		// TODO
+		this.leadership = 5;
 	}
 }
 
 public enum UnitType {
+	None,
 	Hero,
 	Villain,
 	Criminal

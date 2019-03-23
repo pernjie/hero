@@ -31,6 +31,6 @@ public class UnitPortrait : MonoBehaviour {
 	}
 
 	public void OnClick() {
-		leftPanel.ShowUnitDetailsPopup (unit);
+		leftPanel.ShowUnitDetailsPopup (unit, true);
 	}
 }

@@ -5,16 +5,19 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler {
+	LeftPanel leftPanel;
 	BreedingPopup breedingPopup;
 	Transform breedingPopupTransform;
 	Transform geneticDockTransform;
 	public Text unitName;
 	Vector3 startingPosition;
 
+	bool isDraggable;
 	bool inSlot;
-	public Unit unit;
+	public GeneticSample sample;
 
 	void Awake() {
+		leftPanel = FindObjectOfType<LeftPanel> ();
 		breedingPopup = FindObjectOfType<BreedingPopup> ();
 		breedingPopupTransform = FindObjectOfType<BreedingPopup> ().gameObject.transform;
 		geneticDockTransform = FindObjectOfType<BreedingPopup> ().GeneticDock.transform;
@@ -25,35 +28,51 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 		startingPosition = this.transform.localPosition;
 	}
 
-	public void Initialise (Unit unit) {
-		this.unit = unit;
-		unitName.text = unit.name;
+	public void Initialise (GeneticSample sample, bool isDraggable) {
+		this.isDraggable = isDraggable;
+		this.sample = sample;
+		if (isDraggable)
+			unitName.text = sample.unit.name + " (" + sample.samples + ")" + "\n" + sample.unit.gender.ToString();
+		else
+			unitName.text = sample.unit.name + " (" + (sample.samples - 1) + ")" + "\n" + sample.unit.gender.ToString();
 	}
 
 	Transform startParent;
 	Transform canvas;
 
 	public void OnBeginDrag(PointerEventData eventData) {
-		inSlot = false;
+		if (isDraggable) {
+			inSlot = false;
 
-		transform.SetParent (breedingPopupTransform);
-		//GetComponentInChildren<Image> ().raycastTarget = false;
-		GetComponent<CanvasGroup>().blocksRaycasts = false;
-		GetComponent<CanvasGroup> ().interactable = false;
-		transform.SetAsLastSibling ();
-		//transform.SetSiblingIndex(1);
+			transform.SetParent (breedingPopupTransform);
+
+			GetComponent<CanvasGroup> ().blocksRaycasts = false;
+			GetComponent<CanvasGroup> ().interactable = false;
+			transform.SetAsLastSibling ();
+		}
 	}
 
 	public void OnDrag(PointerEventData eventData) {
-		transform.position = Input.mousePosition;
+		if (isDraggable) {
+			transform.position = Input.mousePosition;
+		}
 	}
 
 	public void OnEndDrag(PointerEventData eventData) {
 		ResetPosition ();
 	}
 
+	public void OnMouseOver() {
+		// view tooltip of unit details
+		leftPanel.ShowUnitDetailsPopup(sample.unit, false);
+	}
+
+	public void OnMouseOff() {
+		leftPanel.HideUnitDetailsPopup ();
+	}
+
 	public void DropOnSlot(BreedingSlot breedingSlot) {
-		if (unit.gender == breedingSlot.genderSlot) {
+		if (sample.unit.gender == breedingSlot.genderSlot) {
 			inSlot = true;
 			this.transform.position = breedingSlot.gameObject.transform.position;
 			breedingPopup.AddIconToSlot (this, breedingSlot);
@@ -69,7 +88,6 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 			breedingPopup.RemoveIconFromSlot (this);
 			transform.SetParent (geneticDockTransform);
 			this.transform.localPosition = startingPosition;
-			//transform.SetAsLastSibling ();
 		}
 	}
 }

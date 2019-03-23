@@ -10,6 +10,7 @@ public class LeftPanel : MonoBehaviour {
 	public GameObject PortraitsDock;
 	public GameObject UnitDetailsPopup;
 	public GameObject BreedingPopup;
+	public Text money;
 
 	public GameObject CapesView;
 
@@ -27,6 +28,11 @@ public class LeftPanel : MonoBehaviour {
 		displayedUnits = new List<Unit> ();
 	}
 
+	void Start() {
+		HideUnitDetailsPopup ();
+		HideBreedingPopup ();
+	}
+
 	public void ToggleView(PanelView view) {
 		if (view == PanelView.Capes) {
 			CapesView.SetActive (true);
@@ -38,21 +44,23 @@ public class LeftPanel : MonoBehaviour {
 	}
 
 	public GameObject blockingPanel;
-	GameObject currentPopup;
+	public GameObject currentPopup;
 
-	public void ShowUnitDetailsPopup(Unit unit) {
+	public void ShowUnitDetailsPopup(Unit unit, bool showButton) {
+		UnitDetailsPopup.GetComponent<UnitDetailsPopup> ().ToggleButton (showButton);
 		UnitDetailsPopup.GetComponent<UnitDetailsPopup> ().Initialise (unit);
-		blockingPanel.SetActive (true);
+		//blockingPanel.SetActive (true);
 		UnitDetailsPopup.transform.localScale = new Vector3(1f, 1f, 1f);
-		currentPopup = UnitDetailsPopup;
 	}
 
 	public void HideUnitDetailsPopup() {
-		blockingPanel.SetActive (false);
+		//blockingPanel.SetActive (false);
 		UnitDetailsPopup.transform.localScale = new Vector3(0f, 0f, 0f);
 	}
 
 	public void ShowBreedingPopup() {
+		HideUnitDetailsPopup ();
+
 		blockingPanel.SetActive (true);
 		BreedingPopup.transform.localScale = new Vector3(1f, 1f, 1f);
 		currentPopup = BreedingPopup;
@@ -60,6 +68,7 @@ public class LeftPanel : MonoBehaviour {
 
 	public void HideBreedingPopup() {
 		blockingPanel.SetActive (false);
+		HideUnitDetailsPopup ();
 		BreedingPopup.transform.localScale = new Vector3(0f, 0f, 0f);
 	}
 
@@ -76,6 +85,7 @@ public class LeftPanel : MonoBehaviour {
 		if (currentPopup != null) {
 			blockingPanel.SetActive (false);
 			currentPopup.transform.localScale = new Vector3 (0f, 0f, 0f);
+			currentPopup = null;
 		}
 	}
 
@@ -92,6 +102,10 @@ public class LeftPanel : MonoBehaviour {
 			int row = i / PORTRAITS_IN_ROW;
 			portraitGO.transform.localPosition = new Vector3 (OFFSET_X + (column * (PORTRAIT_WIDTH + PORTRAIT_MARGIN)), row * -(PORTRAIT_HEIGHT + PORTRAIT_MARGIN), 0f);
 		}
+	}
+
+	public void UpdateMoneyUI(int amount) {
+		money.text = "Money: " + amount;
 	}
 }
 

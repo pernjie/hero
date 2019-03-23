@@ -10,7 +10,11 @@ public class UnitDetailsPopup : MonoBehaviour {
 
 	Unit unit;
 	public Text name;
-	public Text gender;
+	public Text health;
+	public Text strength;
+	public Text speed;
+	public Text technique;
+	public Button button;
 
 	void Awake() {
 		leftPanel = FindObjectOfType<LeftPanel> ();
@@ -18,10 +22,25 @@ public class UnitDetailsPopup : MonoBehaviour {
 		breedingManager = FindObjectOfType<BreedingManager> ();
 	}
 
+	public void ToggleButton(bool toShow) {
+		button.gameObject.SetActive (toShow);
+	}
+
 	public void Initialise(Unit unit) {
 		this.unit = unit;
 		name.text = unit.name;
-		gender.text = unit.gender.ToString();
+
+		if (unit.gender == Gender.Male) {
+			name.color = new Color (.2f, .2f, 1f);
+		} else {
+			name.color = new Color (1f, .2f, .2f);
+		}
+
+		//gender.text = unit.gender.ToString();
+		health.text = "Health: " + unit.genetics.health;
+		strength.text = "Strength: " + unit.genetics.strength;
+		speed.text = "Speed: " + unit.genetics.speed;
+		technique.text = "Technique: " + unit.genetics.technique;
 	}
 
 	public void OnCollectClick() {

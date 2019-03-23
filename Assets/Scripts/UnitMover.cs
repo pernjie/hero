@@ -18,10 +18,12 @@ public class UnitMover : MonoBehaviour {
 		city = FindObjectOfType<City> ();
 	}
 
-	public void Initialise(Tile tile) {
+	public void Initialise(Tile tile, float delay) {
 		currentTile = tile;
 		transform.position = city.GetTilePosition (tile);
 		newPosition = this.transform.position;
+
+		delayBetweenTiles = delay;
 	}
 
 	public void MovementUpdate () {

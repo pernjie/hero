@@ -11,7 +11,7 @@ public class VillainMover : UnitMover {
 	public Crime currentFocusedCrime;
 
 	public new void Initialise(Villain villain, Tile tile) {
-		base.Initialise (tile);
+		base.Initialise (tile, villain.movementDelay);
 		crimeManager = FindObjectOfType<CrimeManager> ();
 		unitManager = FindObjectOfType<UnitManager> ();
 		this.villain = villain;

@@ -83,7 +83,8 @@ public class CrimeManager : MonoBehaviour {
     }
 
 	public Crime SpawnNewPettyCrime() {
-		List<Criminal> criminals = new List<Criminal> () { new Criminal() };
+		// TODO: configure criminal stats
+		List<Criminal> criminals = new List<Criminal> () { new Criminal(UnitType.Criminal, 2, 1, 5) };
 		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, null, 2f);
 		currentCrimes.Add (newCrime);
 
@@ -95,7 +96,7 @@ public class CrimeManager : MonoBehaviour {
 	public Crime SpawnNewVillainCrime(Villain villain) {
 		List<Criminal> criminals = new List<Criminal> ();
 		for (int i = 0; i < villain.leadership; i++) {
-			criminals.Add (new Criminal ());
+			criminals.Add (new Criminal (UnitType.Criminal, 2, 1, 5));
 		}
 
 		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, new List<Villain>() {villain}, 4f);
@@ -165,13 +166,11 @@ public class CrimeManager : MonoBehaviour {
 
 [System.Serializable]
 public class Criminal : Unit {
-	public Criminal() {
-		InitialiseStats (UnitType.Criminal, 2, 1, 1f);
+	
+	public Criminal(UnitType unitType, int health, int strength, int speed) {
+		Initialise (unitType, health, strength, speed);
 	}
 
-	public Criminal(int maxHealth, int attackDamage, float attackSpeed) {
-		InitialiseStats (UnitType.Criminal, maxHealth, attackDamage, attackSpeed);
-	}
 }
 
 [System.Serializable]
