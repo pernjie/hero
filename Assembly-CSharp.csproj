@@ -67,6 +67,7 @@
      <Compile Include="Assets\Scripts\UI\MouseController.cs" />
      <Compile Include="Assets\Scripts\UI\PanelViewButton.cs" />
      <Compile Include="Assets\Scripts\UI\UnitDetailsPopup.cs" />
+     <Compile Include="Assets\Scripts\UI\UnitLabel.cs" />
      <Compile Include="Assets\Scripts\UI\UnitPortrait.cs" />
      <Compile Include="Assets\Scripts\UnitManager.cs" />
      <Compile Include="Assets\Scripts\UnitMover.cs" />

@@ -6,22 +6,24 @@ public class UnitManager : MonoBehaviour {
 	City city;
 	LeftPanel leftPanel;
 	BreedingManager breedingManager;
+	CrimeManager crimeManager;
 
-	public GameObject HeroPrefab;
-	public GameObject VillainPrefab;
-	Dictionary<Unit, GameObject> UnitToGOMap;
+	public GameObject heroPrefab;
+	public GameObject villainPrefab;
+	Dictionary<Unit, GameObject> unitToGOMap;
 	public List<Unit> units;
 
 	void Awake() {
 		city = FindObjectOfType<City> ();
 		leftPanel = FindObjectOfType<LeftPanel> ();
 		breedingManager = FindObjectOfType<BreedingManager> ();
+		crimeManager = FindObjectOfType<CrimeManager> ();
 	}
 
 	public void Initialise() {
-		UnitToGOMap = new Dictionary<Unit, GameObject> ();
+		unitToGOMap = new Dictionary<Unit, GameObject> ();
 
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 3; i++) {
 			AddHero (breedingManager.GetNewHero(), city.GetRandomTile());
 		}
 
@@ -37,20 +39,20 @@ public class UnitManager : MonoBehaviour {
 	}
 
 	public void AddHero(Hero hero, Tile tile) {
-		GameObject heroGO = Instantiate (HeroPrefab);
+		GameObject heroGO = Instantiate (heroPrefab);
 
 		heroGO.GetComponent<HeroMover> ().Initialise (hero, tile);
 		units.Add (hero);
-		UnitToGOMap [hero] = heroGO;
+		unitToGOMap [hero] = heroGO;
 		leftPanel.AddPortrait (hero);
 	}
 
 	public void AddVillain(Villain villain, Tile tile) {
-		GameObject villainGO = Instantiate (VillainPrefab);
+		GameObject villainGO = Instantiate (villainPrefab);
 
 		units.Add (villain);
 		villainGO.GetComponent<VillainMover> ().Initialise (villain, tile);
-		UnitToGOMap [villain] = villainGO;
+		unitToGOMap [villain] = villainGO;
 		leftPanel.AddPortrait (villain);
 	}
 
@@ -59,13 +61,29 @@ public class UnitManager : MonoBehaviour {
 		bool isKilled = attacked.DamageUnit (attackDamage);
 
 		if (isKilled) {
-			if (attacked.unitType == UnitType.Criminal)
+			if (attacked.unitType == UnitType.Criminal) {
 				return true;
+			}
 
 			// handle only hero and villain deaths
 			GameObject unitGO = GetUnitGOFromUnit (attacked);
 			if (unitGO != null) {
 				unitGO.SendMessage ("KillUnit");
+			}
+
+			// to remove hero from scene
+			if (attacked.unitType == UnitType.Hero) {
+				crimeManager.RemoveHeroFromScene (attacked);
+			} else if (attacked.unitType == UnitType.Villain) {
+				crimeManager.RemoveVillainFromScene (attacked);
+			}
+		} else if (attacked.currentHealth < attacked.fleeHealth) {
+			// check if health below unit flee threshold. if so, attempt to flee
+			// TODO: fleeing fail
+			if (attacked.unitType == UnitType.Hero) {
+				crimeManager.HandleHeroFlee (attacked);
+			} else if (attacked.unitType == UnitType.Villain) {
+				crimeManager.HandleVillainFlee (attacked);
 			}
 		}
 
@@ -74,9 +92,15 @@ public class UnitManager : MonoBehaviour {
 		return isKilled;
 	}
 
+	public void HandleUnitHeal(Unit healer, Unit healed) {
+		healed.HealUnit (healed.genetics.regenerationRate);
+
+		leftPanel.UpdateHealth (healed);
+	}
+
 	public GameObject GetUnitGOFromUnit(Unit unit) {
 		try {
-			return UnitToGOMap [unit];
+			return unitToGOMap [unit];
 		} catch (System.IndexOutOfRangeException) {
 			return null;
 		}
@@ -100,6 +124,12 @@ public class Unit {
 
 	public float movementDelay;
 
+	public int fleeHealth;
+
+	public float recoveryCooldown;
+	public float recoveryCounter;
+	public float regenerationCounter;
+
 	public Unit() { }
 
 	public void Initialise (GeneticMaterial genetics) {
@@ -117,6 +147,8 @@ public class Unit {
 		this.nextAttackCounter = 0f;
 
 		this.movementDelay = 10f / (float)genetics.speed;
+
+		this.fleeHealth = (int) ((float)maxHealth * genetics.fleeThreshold);
 	}
 
 	// for criminals

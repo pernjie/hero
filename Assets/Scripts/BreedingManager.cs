@@ -4,11 +4,10 @@ using UnityEngine;
 using System.Linq;
 
 public class BreedingManager : MonoBehaviour {
-	UnitManager unitManager;
-	List<GeneticSample> GeneticSamples;
+	List<GeneticSample> geneticSamples;
 
-	public List<Power> PowerList;
-	public char[] CodonList;
+	public List<Power> powerList;
+	public char[] codonList;
 	int NUM_CODONS = 20;
 	float MUTATION_RATE = 0.05f;
 	float MUTATION_CHANCE_POWER = 0.04f;
@@ -16,11 +15,10 @@ public class BreedingManager : MonoBehaviour {
 	public BreedingPopup breedingPopup;
 
 	void Awake() {
-		unitManager = FindObjectOfType<UnitManager> ();
-		GeneticSamples = new List<GeneticSample> ();
-		PowerList = new List<Power> (Resources.LoadAll ("Powers", typeof(Power)).Cast<Power> ().ToArray ());
+		geneticSamples = new List<GeneticSample> ();
+		//powerList = new List<Power> (Resources.LoadAll ("Powers", typeof(Power)).Cast<Power> ().ToArray ());
 
-		CodonList = "pern".ToCharArray ();
+		codonList = "pern".ToCharArray ();
 	}
 
 	void Start() {
@@ -31,26 +29,27 @@ public class BreedingManager : MonoBehaviour {
 		// TODO: check if clash
 		int sampleId = Random.Range (0, 9999);
 		GeneticSample newSample = new GeneticSample (owner, sampleId);
-		GeneticSamples.Add (newSample);
+		geneticSamples.Add (newSample);
 		breedingPopup.AddGeneticIcon (newSample);
 	}
 
 	public void SpendGeneticMaterial(int sampleId) {
 		GeneticSample toRemove = null;
-		foreach (GeneticSample sample in GeneticSamples) {
+		foreach (GeneticSample sample in geneticSamples) {
 			if (sample.id == sampleId) {
 				toRemove = sample;
 			}
 		}
 
 		if (toRemove != null) {
-			GeneticSamples.Remove (toRemove);
+			geneticSamples.Remove (toRemove);
 		}
 	}
 
 	public Hero GetNewHero() {
 		Hero newHero = new Hero ("Hero " + Random.Range (0, 9999));
 		newHero.Initialise(GenerateInitialMaterial ());
+		newHero.unitType = UnitType.Hero;
 
 		return newHero;
 	}
@@ -58,6 +57,7 @@ public class BreedingManager : MonoBehaviour {
 	public Villain GetNewVillain() {
 		Villain newVillain = new Villain ("Villain " + Random.Range (0, 9999));
 		newVillain.Initialise(GenerateInitialMaterial ());
+		newVillain.unitType = UnitType.Villain;
 
 		return newVillain;
 	}
@@ -66,9 +66,9 @@ public class BreedingManager : MonoBehaviour {
 		List<Codon> newCodons = new List<Codon> ();
 		for (int i = 0; i < NUM_CODONS; i++) {
 			if (Random.Range (0, 2) == 0) {
-				newCodons.Add (mutateCodon (unit1.genetics.codons [i].code));
+				newCodons.Add (MutateCodon (unit1.genetics.codons [i].code));
 			} else {
-				newCodons.Add (mutateCodon (unit1.genetics.codons [i].code));
+				newCodons.Add (MutateCodon (unit1.genetics.codons [i].code));
 			}
 		}
 
@@ -78,7 +78,7 @@ public class BreedingManager : MonoBehaviour {
 		return gm;
 	}
 
-	Codon mutateCodon(string code) {
+	Codon MutateCodon(string code) {
 		return new Codon (code);
 	}
 
@@ -101,7 +101,7 @@ public class BreedingManager : MonoBehaviour {
 			if (Random.Range (0f, 1f) < MUTATION_CHANCE_POWER) {
 				code += "x";
 			} else {
-				code += CodonList [Random.Range (0, 4)];
+				code += codonList [Random.Range (0, 4)];
 			}
 		}
 
@@ -128,14 +128,17 @@ public class GeneticMaterial {
 	public int strength;
 	public int speed;
 	public int technique;
+	public float fleeThreshold;
+	public int regenerationRate; // how many health per second
+	public float fleeingDuration; // how long to run before finish fleeing
 
 	public GeneticMaterial(List<Codon> codons) {
 		// TODO: handle male/female difference?
-		int BASE_HEALTH = 10;
+		int BASE_HEALTH = 50;
 		int VARIATION_HEALTH = 5;
 		int BASE_STRENGTH = 3;
 		int VARIATION_STRENGTH = 2;
-		int BASE_SPEED = 5;
+		int BASE_SPEED = 9;
 		int VARIATION_SPEED = 1;
 		int BASE_TECHNIQUE = 2;
 		int VARIATION_TECHNIQUE = 1;
@@ -144,6 +147,9 @@ public class GeneticMaterial {
 		strength = BASE_STRENGTH;
 		speed = BASE_SPEED;
 		technique = BASE_TECHNIQUE;
+		fleeThreshold = 0.2f;
+		regenerationRate = 1;
+		fleeingDuration = 5f;
 
 		this.codons = codons;
 		this.codonString = "";

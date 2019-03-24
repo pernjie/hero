@@ -424,10 +424,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e1e8d91ded03b94a88e45e244d5f398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TileDock: {fileID: 155789381}
-  TilePrefab: {fileID: 1195251046146436100, guid: 16713552f0a9dbe4691b27ebdef6ec59,
+  tileDock: {fileID: 155789381}
+  tilePrefab: {fileID: 1195251046146436100, guid: 16713552f0a9dbe4691b27ebdef6ec59,
     type: 3}
-  HousePrefab: {fileID: 6275122371460417379, guid: cdd73360f3d73b74cb163276272773f1,
+  housePrefab: {fileID: 6275122371460417379, guid: cdd73360f3d73b74cb163276272773f1,
     type: 3}
   tileSprites:
   - {fileID: 21300000, guid: e01ea8ced7e6c3b49a969b0c7d17c13d, type: 3}
@@ -460,9 +460,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8ef75dc4a846644391002f13e1e9b06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HeroPrefab: {fileID: 6154587389447363594, guid: f638d70d2e7d53e46bbfe92ada103f7a,
+  heroPrefab: {fileID: 6154587389447363594, guid: f638d70d2e7d53e46bbfe92ada103f7a,
     type: 3}
-  VillainPrefab: {fileID: 6154587389447363594, guid: 3d8199376b2b3ad41a5abd1ed839d486,
+  villainPrefab: {fileID: 6154587389447363594, guid: 3d8199376b2b3ad41a5abd1ed839d486,
     type: 3}
   units: []
 --- !u!1 &198922613
@@ -1633,13 +1633,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8eb6f91d96e09e949ba02382d31c1cec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitPortraitPrefab: {fileID: 4476409248590832302, guid: ee0b494d3c5ff1640b71fc5012aca8ba,
+  unitPortraitPrefab: {fileID: 4476409248590832302, guid: ee0b494d3c5ff1640b71fc5012aca8ba,
     type: 3}
-  PortraitsDock: {fileID: 315005101}
-  UnitDetailsPopup: {fileID: 749944603}
-  BreedingPopup: {fileID: 2070069161}
+  portraitsDock: {fileID: 315005101}
+  unitDetailsPopup: {fileID: 749944603}
+  breedingPopup: {fileID: 2070069161}
   money: {fileID: 558620900}
-  CapesView: {fileID: 1624023096}
+  capesView: {fileID: 1624023096}
+  unitLabelPrefab: {fileID: 6561786555030483457, guid: 5aa91e6a04a3e7e4694260e4f5c59931,
+    type: 3}
   blockingPanel: {fileID: 1278778363}
   currentPopup: {fileID: 0}
 --- !u!222 &688861464
@@ -1788,11 +1790,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00dc90b619ad17f4a813c4f045ea3832, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  name: {fileID: 352419659}
-  health: {fileID: 952330825}
-  strength: {fileID: 198922615}
-  speed: {fileID: 1944962279}
-  technique: {fileID: 395859356}
+  nameText: {fileID: 352419659}
+  healthText: {fileID: 952330825}
+  strengthText: {fileID: 198922615}
+  speedText: {fileID: 1944962279}
+  techniqueText: {fileID: 395859356}
   button: {fileID: 1013351597}
 --- !u!1001 &857109177
 PrefabInstance:
@@ -3144,8 +3146,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66e2fa6057c52f147be0f89ce25f8aa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PowerList: []
-  CodonList: 
+  powerList: []
+  codonList: 
   breedingPopup: {fileID: 2070069163}
 --- !u!114 &1871007001
 MonoBehaviour:
@@ -3159,8 +3161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d0636ceee26d8846a5c881284d1e597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitDummy: {fileID: 857109178}
-  LayerIDForTiles:
+  unitDummy: {fileID: 857109178}
+  layerIDForTiles:
     serializedVersion: 2
     m_Bits: 256
   mouseMode: 0
@@ -3458,10 +3460,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e6dc7538b646f047abe956d846ae14a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GeneticPrefab: {fileID: 4476409248590832302, guid: 0c30ce4279284ec4284b1757e823a144,
+  geneticPrefab: {fileID: 4476409248590832302, guid: 0c30ce4279284ec4284b1757e823a144,
     type: 3}
-  GeneticSlotPrefab: {fileID: 1541486191628295711, guid: 8a7a1b772d6bfb042953817275d063ba,
-    type: 3}
-  GeneticDock: {fileID: 24526125}
-  MaleSlot: {fileID: 367099012}
-  FemaleSlot: {fileID: 542180564}
+  geneticDock: {fileID: 24526125}
+  maleSlot: {fileID: 542180564}
+  femaleSlot: {fileID: 367099012}

@@ -5,15 +5,15 @@ using UnityEngine;
 public class City : MonoBehaviour {
 	CrimeManager crimeManager;
 
-	public GameObject TileDock;
-	public GameObject TilePrefab;
+	public GameObject tileDock;
+	public GameObject tilePrefab;
 
-	public GameObject HousePrefab;
+	public GameObject housePrefab;
 
 	public Sprite[] tileSprites;
 
-	int MAP_WIDTH = 2;
-	int MAP_HEIGHT = 2;
+	int MAP_WIDTH = 7;
+	int MAP_HEIGHT = 7;
 	float TILE_WIDTH = 1.9f;
 	float TILE_HEIGHT = .95f;
 	float MAP_OFFSET_X = 1.3f;
@@ -30,7 +30,7 @@ public class City : MonoBehaviour {
 	int mapRowStart, mapRowEnd, mapColStart, mapColEnd;
 	Dictionary<string, Tile> tiles;
 	public List<Tile> tileList;
-	Dictionary<Tile, GameObject> TileToGOMap;
+	Dictionary<Tile, GameObject> tileToGOMap;
 
 	void Awake() {
 		crimeManager = FindObjectOfType<CrimeManager> ();
@@ -41,8 +41,8 @@ public class City : MonoBehaviour {
 		GenerateMap ();
 		SetTileSprites ();
 
-		//GameObject houseGO = Instantiate (HousePrefab, TileDock.transform);
-		//houseGO.transform.position = GetTilePosition (2, 4);
+		GameObject houseGO = Instantiate (housePrefab, tileDock.transform);
+		houseGO.transform.position = GetTilePosition (2, 4);
 
 		FindObjectOfType<UnitManager> ().Initialise ();
     }
@@ -56,11 +56,11 @@ public class City : MonoBehaviour {
 		tileList = new List<Tile> ();
 		//tiles = new Tile[MAP_WIDTH, MAP_HEIGHT];
 		tiles = new Dictionary<string, Tile> ();
-		TileToGOMap = new Dictionary<Tile, GameObject> ();
+		tileToGOMap = new Dictionary<Tile, GameObject> ();
 
 		for (int i = 0; i < MAP_WIDTH; i++) {
 			for (int j = 0; j < MAP_HEIGHT; j++) {
-				GameObject tileGO = Instantiate (TilePrefab, TileDock.transform);
+				GameObject tileGO = Instantiate (tilePrefab, tileDock.transform);
 				tileGO.transform.localPosition = new Vector2 (
 					MAP_OFFSET_X - (MAP_TOTAL_WIDTH /2f) + (j * TILE_WIDTH/2f) + (i * TILE_WIDTH/2f) + (TILE_WIDTH/2f), 
 					MAP_OFFSET_Y + (i * TILE_HEIGHT/2f) - (j * TILE_HEIGHT/2f)
@@ -80,7 +80,7 @@ public class City : MonoBehaviour {
 				Tile tile = new Tile (i, j, tileType);
 				tileGO.GetComponent<TileComponent> ().Initialise(tile);
 
-				TileToGOMap [tile] = tileGO;
+				tileToGOMap [tile] = tileGO;
 				//tiles [tile.x, tile.y] = tile;
 				tiles[tile.ToString()] = tile;
 				tileList.Add (tile);
@@ -104,7 +104,7 @@ public class City : MonoBehaviour {
 
 				Debug.Log (i + ", " + j);
 
-				GameObject tileGO = Instantiate (TilePrefab, TileDock.transform);
+				GameObject tileGO = Instantiate (tilePrefab, tileDock.transform);
 				tileGO.transform.localPosition = new Vector2 (
 					MAP_OFFSET_X - (MAP_TOTAL_WIDTH / 2f) + (j * TILE_WIDTH / 2f) + (i * TILE_WIDTH / 2f) + (TILE_WIDTH / 2f), 
 					MAP_OFFSET_Y + (i * TILE_HEIGHT / 2f) - (j * TILE_HEIGHT / 2f)
@@ -124,7 +124,7 @@ public class City : MonoBehaviour {
 				Tile tile = new Tile (i, j, tileType);
 				tileGO.GetComponent<TileComponent> ().Initialise (tile);
 
-				TileToGOMap [tile] = tileGO;
+				tileToGOMap [tile] = tileGO;
 				//tiles [tile.x, tile.y] = tile;
 				tiles [tile.ToString ()] = tile;
 				tileList.Add (tile);
@@ -152,7 +152,7 @@ public class City : MonoBehaviour {
 
 	public GameObject GetTileGOFromTile(Tile t) {
 		if (t != null)
-			return TileToGOMap [t];
+			return tileToGOMap [t];
 		else
 			return null;
 	}
@@ -221,7 +221,7 @@ public class City : MonoBehaviour {
 	}
 
 	public Vector3 GetTilePosition(Tile tile) {
-		Vector3 tilePos = TileToGOMap [GetTileAt(tile)].transform.position;
+		Vector3 tilePos = tileToGOMap [GetTileAt(tile)].transform.position;
 		return new Vector3 (tilePos.x, tilePos.y, -1f);
 	}
 

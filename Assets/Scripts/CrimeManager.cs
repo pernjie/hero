@@ -35,19 +35,18 @@ public class CrimeManager : MonoBehaviour {
 		// progress running crimes
 		foreach (Crime crime in currentCrimes) {
 			if (crime.GetIsActive ()) {
+				// if no more criminals or villains, end crime
+				if (crime.GetTargetableCriminals ().Count == 0 && crime.GetTargetableVillains ().Count == 0) {
+					HandleCompleteCrime (crime, false);
+					continue;
+				}
+
 				// progress crime if crime is still active
-				crime.crimeCurrentProgress += Time.deltaTime;
+				crime.crimeCurrentProgress += Time.deltaTime * crime.progressMultiplier;
 
 				// check if crime is completed
 				if (crime.crimeCurrentProgress > crime.crimeProgressNeeded) {
-					city.GetTileGOFromTile (crime.tiles[0]).GetComponent<TileComponent> ().HideTime();
-
-					foreach (Tile tile in crime.tiles) {
-						crime.crimeComplete = true;
-						city.GetTileGOFromTile (tile).GetComponent<TileComponent> ().RemoveCrimeOnTile ();
-
-						crimesToExpire.Add (crime);
-					}
+					HandleCompleteCrime (crime, true);
 				} else {
 					city.GetTileGOFromTile (crime.tiles[0]).GetComponent<TileComponent> ().DisplayTime (crime.crimeProgressNeeded - crime.crimeCurrentProgress);
 
@@ -82,10 +81,21 @@ public class CrimeManager : MonoBehaviour {
 		}
     }
 
+	void HandleCompleteCrime(Crime crime, bool isSuccess) {
+		city.GetTileGOFromTile (crime.tiles[0]).GetComponent<TileComponent> ().HideTime();
+
+		foreach (Tile tile in crime.tiles) {
+			crime.crimeComplete = true;
+			city.GetTileGOFromTile (tile).GetComponent<TileComponent> ().RemoveCrimeOnTile ();
+
+			crimesToExpire.Add (crime);
+		}
+	}
+
 	public Crime SpawnNewPettyCrime() {
 		// TODO: configure criminal stats
 		List<Criminal> criminals = new List<Criminal> () { new Criminal(UnitType.Criminal, 2, 1, 5) };
-		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, null, 2f);
+		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, null, 5f);
 		currentCrimes.Add (newCrime);
 
 		StartCrime (newCrime);
@@ -99,7 +109,7 @@ public class CrimeManager : MonoBehaviour {
 			criminals.Add (new Criminal (UnitType.Criminal, 2, 1, 5));
 		}
 
-		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, new List<Villain>() {villain}, 4f);
+		Crime newCrime = new Crime (CrimeType.Robbery, new Tile[] { city.GetRandomTile () }, criminals, new List<Villain>() {villain}, 10f);
 		currentCrimes.Add (newCrime);
 
 		return newCrime;
@@ -162,6 +172,62 @@ public class CrimeManager : MonoBehaviour {
 
 		return false;
 	}
+
+	public void RemoveHeroFromScene(Unit unit) {
+		Hero toRemove = null;
+		foreach (Crime crime in currentCrimes) {
+			if (crime.heroes == null)
+				continue;
+			
+			foreach (Hero hero in crime.heroes) {
+				if (hero.uid == unit.uid) {
+					toRemove = hero;
+					crime.progressMultiplier *= 3f;
+				}
+			}
+
+			if (toRemove != null) {
+				crime.heroes.Remove (toRemove);
+				return;
+			}
+		}
+	}
+
+	public void RemoveVillainFromScene(Unit unit) {
+		Villain toRemove = null;
+		foreach (Crime crime in currentCrimes) {
+			if (crime.villains == null)
+				continue;
+
+			foreach (Villain villain in crime.villains) {
+				if (villain.uid == unit.uid) {
+					toRemove = villain;
+					break;
+				}
+			}
+
+			if (toRemove != null) {
+				crime.villains.Remove (toRemove);
+				return;
+			}
+		}
+	}
+
+	public void HandleHeroFlee(Unit unit) {
+		RemoveHeroFromScene (unit);
+		GameObject unitGO = unitManager.GetUnitGOFromUnit (unit);
+		if (unitGO != null) {
+			unitGO.GetComponent<HeroMover> ().SetHeroState (HeroState.Fleeing);
+		}
+	}
+
+	public void HandleVillainFlee(Unit unit) {
+		RemoveVillainFromScene (unit);
+		GameObject unitGO = unitManager.GetUnitGOFromUnit (unit);
+		if (unitGO != null) {
+			unitGO.GetComponent<VillainMover> ().SetVillainState (VillainState.Fleeing);
+		}
+	}
 }
 
 [System.Serializable]
@@ -180,10 +246,12 @@ public class Crime {
 	public List<Villain> villains;
 	public List<Hero> heroes;
 	public Tile[] tiles;
+
 	public bool crimeStarted;
 	public bool crimeComplete;
 	public float crimeProgressNeeded;
 	public float crimeCurrentProgress;
+	public float progressMultiplier;
 
 	public Crime(CrimeType crimeType, Tile [] tiles, List<Criminal> criminals, List<Villain> villains, float crimeProgressNeeded) {
 		this.crimeType = crimeType;
@@ -191,9 +259,11 @@ public class Crime {
 		this.villains = villains;
 		this.tiles = tiles;
 		this.crimeProgressNeeded = crimeProgressNeeded;
+
 		crimeStarted = false;
 		crimeComplete = false;
 		crimeCurrentProgress = 0f;
+		progressMultiplier = 1f;
 	}
 
 	public void AddHeroToScene(Hero hero) {
@@ -202,6 +272,9 @@ public class Crime {
 		}
 
 		heroes.Add (hero);
+
+		// if hero on site, crime progress slower
+		progressMultiplier /= 3f;
 	}
 
 	public List<Hero> GetTargetableHeroes() {

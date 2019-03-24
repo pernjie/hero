@@ -128,4 +128,34 @@ MonoBehaviour:
     x: 0
     y: 0
     tileType: 0
+  currentPath: []
+  currentPathIndex: 0
+  villain:
+    uid: 
+    name: 
+    gender: 0
+    unitType: 2
+    isDead: 0
+    maxHealth: 0
+    currentHealth: 0
+    attackDamage: 0
+    nextAttackCounter: 0
+    attackCooldown: 0
+    movementDelay: 0
+    fleeThreshold: 0
+    fleeHealth: 0
+    planningCounter: 0
+    planningTimeNeeded: 0
+    leadership: 0
   villainState: 0
+  currentFocusedCrime:
+    crimeType: 0
+    criminals: []
+    villains: []
+    heroes: []
+    tiles: []
+    crimeStarted: 0
+    crimeComplete: 0
+    crimeProgressNeeded: 0
+    crimeCurrentProgress: 0
+    progressMultiplier: 0

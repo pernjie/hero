@@ -19,7 +19,7 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 		leftPanel = FindObjectOfType<LeftPanel> ();
 		breedingPopup = FindObjectOfType<BreedingPopup> ();
 		breedingPopupTransform = FindObjectOfType<BreedingPopup> ().gameObject.transform;
-		geneticDockTransform = FindObjectOfType<BreedingPopup> ().GeneticDock.transform;
+		geneticDockTransform = FindObjectOfType<BreedingPopup> ().geneticDock.transform;
 	}
 
 	void Start() {

@@ -10,7 +10,7 @@ public class HeroMover : UnitMover {
 	public HeroState heroState;
 	public Crime currentFocusedCrime;
 
-	public new void Initialise(Hero hero, Tile tile) {
+	public void Initialise(Hero hero, Tile tile) {
 		base.Initialise (tile, hero.movementDelay);
 		crimeManager = FindObjectOfType<CrimeManager> ();
 		unitManager = FindObjectOfType<UnitManager> ();
@@ -19,15 +19,18 @@ public class HeroMover : UnitMover {
 		heroState = HeroState.Patrol;
 	}
 
-	void SetHeroState(HeroState newHeroState) {
+	public void SetHeroState(HeroState newHeroState) {
 		if (newHeroState == HeroState.ToCrime) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, .2f, .2f);
-			delayBetweenTiles = 0.2f;
+			delayBetweenTiles = (hero.movementDelay / 3f);
 		} else if (newHeroState == HeroState.Patrol) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, 1f, 1f);
-			delayBetweenTiles = 0.6f;
+			delayBetweenTiles = hero.movementDelay;
 		} else if (newHeroState == HeroState.Dead) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 0f, 0f);
+		} else if (newHeroState == HeroState.Fleeing) {
+			delayBetweenTiles = hero.movementDelay;
+			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 1f, 0f);
 		}
 
 		this.heroState = newHeroState;
@@ -36,9 +39,10 @@ public class HeroMover : UnitMover {
     // Update is called once per frame
     void Update() {
 		MovementUpdate ();
+		RegenerationUpdate ();
 
 		// if patroling and not moving, find new path to patrol
-		if (heroState == HeroState.Patrol && !isMoving) {
+		if ((heroState == HeroState.Patrol || heroState == HeroState.Fleeing) && !isMoving) {
 			GoToTile (city.GetRandomTile ());
 		} else if (heroState == HeroState.ToCrime) {
 			if (!currentFocusedCrime.GetIsActive()) {
@@ -94,6 +98,17 @@ public class HeroMover : UnitMover {
 		}
     }
 
+	void RegenerationUpdate() {
+		if (heroState == HeroState.Fleeing || heroState == HeroState.Patrol) {
+			if (hero.regenerationCounter > 1f) {
+				hero.regenerationCounter = 0f;
+				unitManager.HandleUnitHeal (hero, hero);
+			} else {
+				hero.regenerationCounter += Time.deltaTime;
+			}
+		}
+	}
+
 	public void KillUnit() {
 		Debug.Log (hero.name + " dead");
 		SetHeroState (HeroState.Dead);
@@ -136,5 +151,6 @@ public enum HeroState {
 	Patrol,
 	ToCrime,
 	Fighting,
-	Dead
+	Dead,
+	Fleeing
 }

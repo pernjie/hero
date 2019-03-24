@@ -123,3 +123,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b01edf2ca5b890428e6126eeed1f673, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isMoving: 0
+  currentTile:
+    x: 0
+    y: 0
+    tileType: 0
+  currentPath: []
+  currentPathIndex: 0
+  hero:
+    uid: 
+    name: 
+    gender: 0
+    unitType: 1
+    isDead: 0
+    maxHealth: 0
+    currentHealth: 0
+    attackDamage: 0
+    nextAttackCounter: 0
+    attackCooldown: 0
+    movementDelay: 0
+    fleeThreshold: 0
+    fleeHealth: 0
+  heroState: 0
+  currentFocusedCrime:
+    crimeType: 0
+    criminals: []
+    villains: []
+    heroes: []
+    tiles: []
+    crimeStarted: 0
+    crimeComplete: 0
+    crimeProgressNeeded: 0
+    crimeCurrentProgress: 0
+    progressMultiplier: 0

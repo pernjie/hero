@@ -6,8 +6,8 @@ using UnityEngine.EventSystems;
 public class MouseController : MonoBehaviour {
 	City city;
 
-	public GameObject UnitDummy;
-	public LayerMask LayerIDForTiles;
+	public GameObject unitDummy;
+	public LayerMask layerIDForTiles;
 
 	public MouseMode mouseMode;
 	public delegate void UpdateFunc();
@@ -43,12 +43,12 @@ public class MouseController : MonoBehaviour {
 	void Update_TargetTile() {
 		Tile tile = GetTileOnCursor ();
 		if (tile != null) {
-			if (UnitDummy.transform.localScale == new Vector3 (0f, 0f, 0f)) {
+			if (unitDummy.transform.localScale == new Vector3 (0f, 0f, 0f)) {
 				ShowUnitDummy ();
 			}
 
 			Vector3 tilePosition = city.GetTileGOFromTile (tile).transform.position;
-			UnitDummy.transform.position = new Vector3 (tilePosition.x, tilePosition.y, -1f);
+			unitDummy.transform.position = new Vector3 (tilePosition.x, tilePosition.y, -1f);
 
 			// if user clicks, then current tile is selected as target (note this is in the if block that we can assume tile exists)
 			if (Input.GetMouseButtonDown (0)) {
@@ -71,16 +71,16 @@ public class MouseController : MonoBehaviour {
 	}
 
 	void ShowUnitDummy() {
-		UnitDummy.transform.localScale = new Vector3 (1f, 1f, 1f);
+		unitDummy.transform.localScale = new Vector3 (1f, 1f, 1f);
 	}
 
 	void HideUnitDummy() {
-		UnitDummy.transform.localScale = new Vector3 (0f, 0f, 0f);
+		unitDummy.transform.localScale = new Vector3 (0f, 0f, 0f);
 	}
 
 	Tile GetTileOnCursor() {
 		Vector2 worldPoint = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-		RaycastHit2D hitInfo = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, LayerIDForTiles);
+		RaycastHit2D hitInfo = Physics2D.Raycast(worldPoint, Vector2.zero, Mathf.Infinity, layerIDForTiles);
 		if (hitInfo.collider != null) {
 			Tile tile = hitInfo.collider.gameObject.GetComponent<TileComponent> ().tile;
 			return tile;

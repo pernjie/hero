@@ -10,7 +10,7 @@ public class VillainMover : UnitMover {
 	public VillainState villainState;
 	public Crime currentFocusedCrime;
 
-	public new void Initialise(Villain villain, Tile tile) {
+	public void Initialise(Villain villain, Tile tile) {
 		base.Initialise (tile, villain.movementDelay);
 		crimeManager = FindObjectOfType<CrimeManager> ();
 		unitManager = FindObjectOfType<UnitManager> ();
@@ -19,13 +19,15 @@ public class VillainMover : UnitMover {
 		villainState = VillainState.Planning;
 	}
 
-	void SetVillainState(VillainState newVillainState) {
+	public void SetVillainState(VillainState newVillainState) {
 		if (newVillainState == VillainState.ToCrime) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (4f, .5f, .4f);
 		} else if (newVillainState == VillainState.Planning) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (1f, 1f, 1f);
 		} else if (newVillainState == VillainState.Dead) {
 			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 0f, 0f);
+		} else if (newVillainState == VillainState.Fleeing) {
+			GetComponentInChildren<SpriteRenderer> ().color = new Color (0f, 1f, 0f);
 		}
 
 		this.villainState = newVillainState;
@@ -35,7 +37,7 @@ public class VillainMover : UnitMover {
     void Update() {
 		MovementUpdate ();
 
-		if (villainState == VillainState.Planning && !isMoving) {
+		if ((villainState == VillainState.Planning || villainState == VillainState.Fleeing) && !isMoving) {
 			GoToTile (city.GetRandomTile ());
 		} else if (villainState == VillainState.Planning) {
 			// if planning is complete, create new crime to travel towards and start
@@ -102,5 +104,6 @@ public enum VillainState {
 	Planning,
 	ToCrime,
 	Criming,
-	Dead
+	Dead,
+	Fleeing
 }
