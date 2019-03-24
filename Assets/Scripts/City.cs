@@ -12,8 +12,8 @@ public class City : MonoBehaviour {
 
 	public Sprite[] tileSprites;
 
-	int MAP_WIDTH = 8;
-	int MAP_HEIGHT = 8;
+	int MAP_WIDTH = 2;
+	int MAP_HEIGHT = 2;
 	float TILE_WIDTH = 1.9f;
 	float TILE_HEIGHT = .95f;
 	float MAP_OFFSET_X = 1.3f;
@@ -26,7 +26,9 @@ public class City : MonoBehaviour {
 		new Tile(0, +1)  // down right
 	};
 
-	Tile[,] tiles;
+	//Tile[,] tiles;
+	int mapRowStart, mapRowEnd, mapColStart, mapColEnd;
+	Dictionary<string, Tile> tiles;
 	public List<Tile> tileList;
 	Dictionary<Tile, GameObject> TileToGOMap;
 
@@ -39,8 +41,8 @@ public class City : MonoBehaviour {
 		GenerateMap ();
 		SetTileSprites ();
 
-		GameObject houseGO = Instantiate (HousePrefab, TileDock.transform);
-		houseGO.transform.position = GetTilePosition (2, 4);
+		//GameObject houseGO = Instantiate (HousePrefab, TileDock.transform);
+		//houseGO.transform.position = GetTilePosition (2, 4);
 
 		FindObjectOfType<UnitManager> ().Initialise ();
     }
@@ -52,7 +54,8 @@ public class City : MonoBehaviour {
 
 		// initialise stuff
 		tileList = new List<Tile> ();
-		tiles = new Tile[MAP_WIDTH, MAP_HEIGHT];
+		//tiles = new Tile[MAP_WIDTH, MAP_HEIGHT];
+		tiles = new Dictionary<string, Tile> ();
 		TileToGOMap = new Dictionary<Tile, GameObject> ();
 
 		for (int i = 0; i < MAP_WIDTH; i++) {
@@ -78,18 +81,73 @@ public class City : MonoBehaviour {
 				tileGO.GetComponent<TileComponent> ().Initialise(tile);
 
 				TileToGOMap [tile] = tileGO;
-				tiles [tile.x, tile.y] = tile;
+				//tiles [tile.x, tile.y] = tile;
+				tiles[tile.ToString()] = tile;
 				tileList.Add (tile);
 			}
 		}
+
+		mapRowStart = 0;
+		mapRowEnd = MAP_WIDTH - 1;
+		mapColStart = 0;
+		mapColEnd = MAP_HEIGHT - 1;
+	}
+
+	// expand one row and one column in both directions
+	public void ExpandCity() {
+		float MAP_TOTAL_WIDTH = MAP_WIDTH * TILE_WIDTH;
+
+		for (int i = mapRowStart - 1; i < mapRowEnd + 2; i++) {
+			for (int j = mapColStart - 1; j < mapColEnd + 2; j++) {
+				if (i >= mapRowStart && i <= mapRowEnd && j >= mapColStart && j <= mapColEnd)
+					continue;
+
+				Debug.Log (i + ", " + j);
+
+				GameObject tileGO = Instantiate (TilePrefab, TileDock.transform);
+				tileGO.transform.localPosition = new Vector2 (
+					MAP_OFFSET_X - (MAP_TOTAL_WIDTH / 2f) + (j * TILE_WIDTH / 2f) + (i * TILE_WIDTH / 2f) + (TILE_WIDTH / 2f), 
+					MAP_OFFSET_Y + (i * TILE_HEIGHT / 2f) - (j * TILE_HEIGHT / 2f)
+				);
+
+				TileType tileType;
+				// set terrain
+				if (i == 1 || i == 3 || j == 1 || j == 5) {
+					tileType = TileType.Road;
+				} else {
+					tileType = TileType.Pavement;
+				}
+
+				if (i == 2 && j == 4)
+					tileType = TileType.Building;
+
+				Tile tile = new Tile (i, j, tileType);
+				tileGO.GetComponent<TileComponent> ().Initialise (tile);
+
+				TileToGOMap [tile] = tileGO;
+				//tiles [tile.x, tile.y] = tile;
+				tiles [tile.ToString ()] = tile;
+				tileList.Add (tile);
+			}
+		}
+
+		mapRowStart -= 1;
+		mapRowEnd += 1;
+		mapColStart -= 1;
+		mapColEnd += 1;
+
+		// set tile sprites for all neighbours
+		SetTileSprites();
 	}
 
 	public GameObject GetTileGOAt(int x, int y) {
-		Tile t = GetTileAt (new Tile(x, y));
-		if (t != null)
-			return TileToGOMap [t];
-		else
+		//Tile t = GetTileAt (new Tile(x, y));
+		try {
+			Tile t = tiles[x + ", " + y];
+			return GetTileGOFromTile(t);
+		} catch (KeyNotFoundException) {
 			return null;
+		}
 	}
 
 	public GameObject GetTileGOFromTile(Tile t) {
@@ -147,14 +205,13 @@ public class City : MonoBehaviour {
 	}
 
 	public int GetDistance(Tile tile1, Tile tile2) {
-		// Mathf.Sqrt (Mathf.Pow (tile1.x - tile2.x, 2) + Mathf.Pow (tile1.y - tile2.y, 2));
 		return Mathf.Abs(tile1.x - tile2.x) + Mathf.Abs(tile1.y - tile2.y);
 	}
 
 	public Tile GetTileAt(Tile tile) {
 		try {
-			return tiles [tile.x, tile.y];
-		} catch (System.IndexOutOfRangeException) {
+			return tiles[tile.x + ", " + tile.y];
+		} catch (KeyNotFoundException) {
 			return null;
 		}
 	}

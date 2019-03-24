@@ -12,7 +12,6 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 	public Text unitName;
 	Vector3 startingPosition;
 
-	bool isDraggable;
 	bool inSlot;
 	public GeneticSample sample;
 
@@ -28,34 +27,32 @@ public class GeneticIcon : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 		startingPosition = this.transform.localPosition;
 	}
 
-	public void Initialise (GeneticSample sample, bool isDraggable) {
-		this.isDraggable = isDraggable;
+	public void Initialise (GeneticSample sample) {
 		this.sample = sample;
-		if (isDraggable)
-			unitName.text = sample.unit.name + " (" + sample.samples + ")" + "\n" + sample.unit.gender.ToString();
-		else
-			unitName.text = sample.unit.name + " (" + (sample.samples - 1) + ")" + "\n" + sample.unit.gender.ToString();
+		unitName.text = sample.unit.name;
+
+		if (sample.unit.gender == Gender.Male) {
+			unitName.color = new Color (.2f, .2f, 1f);
+		} else {
+			unitName.color = new Color (1f, .2f, .2f);
+		}
 	}
 
 	Transform startParent;
 	Transform canvas;
 
 	public void OnBeginDrag(PointerEventData eventData) {
-		if (isDraggable) {
-			inSlot = false;
+		inSlot = false;
 
-			transform.SetParent (breedingPopupTransform);
+		transform.SetParent (breedingPopupTransform);
 
-			GetComponent<CanvasGroup> ().blocksRaycasts = false;
-			GetComponent<CanvasGroup> ().interactable = false;
-			transform.SetAsLastSibling ();
-		}
+		GetComponent<CanvasGroup> ().blocksRaycasts = false;
+		GetComponent<CanvasGroup> ().interactable = false;
+		transform.SetAsLastSibling ();
 	}
 
 	public void OnDrag(PointerEventData eventData) {
-		if (isDraggable) {
-			transform.position = Input.mousePosition;
-		}
+		transform.position = Input.mousePosition;
 	}
 
 	public void OnEndDrag(PointerEventData eventData) {

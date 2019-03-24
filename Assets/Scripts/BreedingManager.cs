@@ -28,33 +28,18 @@ public class BreedingManager : MonoBehaviour {
 	}
 
 	public void AddGeneticMaterial(Unit owner) {
-		bool found = false;
-		foreach (GeneticSample sample in GeneticSamples) {
-			if (sample.unit.uid == owner.uid) {
-				found = true;
-				sample.samples += 1;
-				breedingPopup.UpdateGeneticIcon (sample);
-				break;
-			}
-		}
-
-		if (!found) {
-			GeneticSample newSample = new GeneticSample (owner, 1);
-			GeneticSamples.Add (newSample);
-			breedingPopup.AddGeneticIcon (newSample);
-		}
+		// TODO: check if clash
+		int sampleId = Random.Range (0, 9999);
+		GeneticSample newSample = new GeneticSample (owner, sampleId);
+		GeneticSamples.Add (newSample);
+		breedingPopup.AddGeneticIcon (newSample);
 	}
 
-	public void SpendGeneticMaterial(Unit owner) {
+	public void SpendGeneticMaterial(int sampleId) {
 		GeneticSample toRemove = null;
 		foreach (GeneticSample sample in GeneticSamples) {
-			if (sample.unit.uid == owner.uid) {
-				if (sample.samples == 1) {
-					toRemove = sample;
-				} else {
-					sample.samples -= 1;
-				}
-				break;
+			if (sample.id == sampleId) {
+				toRemove = sample;
 			}
 		}
 
@@ -126,11 +111,11 @@ public class BreedingManager : MonoBehaviour {
 
 public class GeneticSample {
 	public Unit unit;
-	public int samples;
+	public int id;
 
-	public GeneticSample(Unit unit, int samples) {
+	public GeneticSample(Unit unit, int id) {
 		this.unit = unit;
-		this.samples = samples;
+		this.id = id;
 	}
 }
 
